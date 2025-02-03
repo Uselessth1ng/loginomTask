@@ -8,12 +8,12 @@ import java.util.Vector;
 public class Handler {
 
     Vector<Cluster> clusters = new Vector<>();
-    double r = 0.3;
+    double r;
 
     public void handle() throws SQLException {
         ArrayList<String> data;
         DB db = new DB();
-        db.connect();
+        r = db.connect();
         int numRows = db.getNumRows();
 
         //фаза 1

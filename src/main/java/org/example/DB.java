@@ -8,10 +8,9 @@ public class DB {
     Statement statement;
     PreparedStatement prepStatement;
     ResultSet resultSet;
-    HashMap<Integer, String> data;
     Connection conn;
 
-    public void connect() throws SQLException {
+    public double connect() throws SQLException {
         Scanner in = new Scanner(System.in);
 
         String server = "//localhost\\sqlexpress", dB = "clope", encrypt = "false", user = "L", password = "123";
@@ -27,12 +26,15 @@ public class DB {
         System.out.print("Input username (default: L): ");
         user = Objects.equals(in.nextLine(), "") ? user : in.nextLine();
 
-        System.out.print("Input username (default: 123): ");
+        System.out.print("Input password (default: 123): ");
         password = Objects.equals(in.nextLine(), "") ? password : in.nextLine();
 
         DriverManager.registerDriver(new com.microsoft.sqlserver.jdbc.SQLServerDriver());
         String dbURL = "jdbc:sqlserver:" + server + ";databaseName=" + dB + ";encrypt=" + encrypt + ";user=" + user + ";password=" + password;
         conn = DriverManager.getConnection(dbURL);
+
+        System.out.print("Input r: ");
+        return in.nextDouble();
     }
 
     public int getNumRows() throws SQLException {
