@@ -47,7 +47,7 @@ public class Handler {
 
     public Integer defineCluster(ArrayList<String> data){
         String tran = data.get(1);
-        double max = -1, prom = -1;
+        double max = -999, prom = -999;
         Integer maxCluster = -1;
 
         for (int i = 0; i < clusters.size(); i++) {
