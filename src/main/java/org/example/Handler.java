@@ -20,7 +20,7 @@ public class Handler {
 
         for (int i = 1; i <= numRows; i++) {
             data = db.readNote(i);
-            data.set(2, defineCluster(data).toString());
+            data.set(2, defineCluster(data, 1).toString());
             db.setCluster(data);
         }
 
@@ -31,7 +31,7 @@ public class Handler {
             moved = false;
             for (int i = 1; i <= numRows; i++) {
                 data = db.readNote(i);
-                Integer newCluster = reDefineCluster(data);
+                Integer newCluster = defineCluster(data, 2);
                 if (newCluster != Integer.parseInt(data.get(2))) {
                     clusters.get(Integer.parseInt(data.get(2))).deleteTran(data.get(1));
                     data.set(2, newCluster.toString());
@@ -45,45 +45,19 @@ public class Handler {
         db.disconnect();
     }
 
-    public Integer defineCluster(ArrayList<String> data){
-        String tran = data.get(1);
-        double max = -999, prom = -999;
-        Integer maxCluster = -1;
-
-        for (int i = 0; i < clusters.size(); i++) {
-            prom = profit(clusters.get(i), tran);
-            if (prom > max) {
-                max = prom;
-                maxCluster = i;
-            }
-        }
-        Cluster newCluster = new Cluster();
-
-        double res = profit(newCluster, tran);
-
-        if (res > max) {
-            newCluster.addTran(tran);
-            clusters.add(newCluster);
-            maxCluster = clusters.size() - 1;
-        } else {
-            clusters.get(maxCluster).addTran(tran);
-        }
-        return maxCluster;
-    }
-
-    public Integer reDefineCluster(ArrayList<String> data){
+    public Integer defineCluster(ArrayList<String> data, int phase){
         int prevCluster = Integer.parseInt(data.get(2));
         String tran = data.get(1);
         double max = -999, prom = -999;
-        Integer maxCluster = -1;
+        int maxCluster = -1;
 
         for (int i = 0; i < clusters.size(); i++) {
             prom = profit(clusters.get(i), tran);
-            if (prom > max && i != prevCluster) {
+            if (prom > max && (phase == 1 || i != prevCluster)) {
                 max = prom;
                 maxCluster = i;
             }
-            else if (i == prevCluster){
+            else if (phase == 2 && i == prevCluster){
                 clusters.get(i).deleteTran(tran);
                 prom = profit(clusters.get(i), tran);
                 if (prom >= max) {
@@ -93,6 +67,7 @@ public class Handler {
                 clusters.get(i).addTran(tran);
             }
         }
+
         Cluster newCluster = new Cluster();
 
         double res = profit(newCluster, tran);
@@ -101,12 +76,12 @@ public class Handler {
             newCluster.addTran(tran);
             clusters.add(newCluster);
             maxCluster = clusters.size() - 1;
-        } else if (maxCluster != prevCluster){
+        } else if (phase == 1 || maxCluster != prevCluster){
             clusters.get(maxCluster).addTran(tran);
         }
-
         return maxCluster;
     }
+
 
     public double profit(Cluster c, String t){
         double s = c.s + t.length();
